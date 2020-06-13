@@ -1,27 +1,21 @@
 <?php
-namespace services;
 
-class AutoLoader
+namespace app\services;
+
+class Autoloader
 {
-  const DEV_NAMESPACE = "php-hw\\";
-  const FILE_PATH = "/../#PATH#";
-  const FILE_EXT = ".php";
+    private $fileExrension = ".php";
 
-  protected $filePath;
-  protected $fileName;
+    public function loadClass(string $classname)
+    {
+        $classname = str_replace('app\\', ROOT_DIR, $classname);
+        $filename = realpath("{$classname}{$this->fileExrension}");
+        var_dump($filename);
+        if (file_exists($filename)) {
+            require $filename;
+            return true;
+        }
 
-  public function loadClass($className)
-  {
-    if (stristr($className, self::DEV_NAMESPACE))
-    {
-      $this->filePath = str_replace(array(self::DEV_NAMESPACE, "\\"), array("", DIRECTORY_SEPARATOR), $className);
-      $this->fileName = str_replace("#PATH#", $this->filePath, $_SERVER["DOCUMENT_ROOT"].self::FILE_PATH);
-      $this->fileName .= self::FILE_EXT;
+        return false;
     }
-    if (file_exists($this->fileName))
-    {
-      include_once($this->fileName);
-    }
-  }
 }
-?>

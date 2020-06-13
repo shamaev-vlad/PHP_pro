@@ -1,5 +1,5 @@
 <?php
-//namespace models;
+namespace app\models;
 class User extends Model
 {
     public $id;
@@ -12,41 +12,18 @@ class User extends Model
         return "users";
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function getUserByRole()
     {
-        $this->id = $id;
-        return $this;
+
     }
 
-    /**
-     * @param mixed $login
-     */
-    public function setLogin($login)
+   public function getUserCart()
     {
-        $this->login = $login;
-        return $this;
+
     }
 
-    /**
-     * @param mixed $password
-     */
-    public function setPassword($password)
+   public function getUserOrders()
     {
-        $this->password = $password;
-        return $this;
+
     }
-
-    /**
-     * @param mixed $email
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-
 }
