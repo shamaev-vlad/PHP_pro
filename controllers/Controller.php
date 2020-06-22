@@ -50,4 +50,5 @@ abstract class Controller
 
         return ob_get_clean();
     }
+
 }

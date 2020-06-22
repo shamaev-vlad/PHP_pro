@@ -9,7 +9,8 @@ class ProductController extends Controller
 
   public function actionIndex()
   {
-      echo "Catalog";
+    $modelCollection = (new Product())->getAll();
+      echo $this->render('catalog', ['modelCollection' => $modelCollection]);
   }
 
 
@@ -17,7 +18,7 @@ class ProductController extends Controller
   {
 
       $this->useLayout = false;
-      
+
       $id = $_GET['id'];
 
       if ($id) {

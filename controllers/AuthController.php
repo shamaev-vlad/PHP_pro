@@ -13,23 +13,4 @@ class AuthController extends Controller
       echo $this->render("form", ['auth' => $auth]);
   }
 
-  public function actionLogin()
-  {
-      $this->useLayout = true;
-      $login = $_GET['login'];
-      $pass = $_GET['pass'];
-      if ($login && $pass) {
-          $query = "SELECT * FROM users WHERE login = '{$login}' AND password = '{$pass}'";
-          $auth = Auth::freeQuery($query)[0];
-          if ($auth) {
-              $auth->message = 'Авторизация прошла успешно!';
-              echo $this->render("auth", ['auth' => $auth]);
-          } else {
-              $this->actionIndex();
-          }
-          return;
-      }
-      $this->actionIndex();
-  }
-
 }

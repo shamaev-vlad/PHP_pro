@@ -9,7 +9,20 @@
 </head>
 <body>
 
-<div class="header"></div>
+<div class="header">
+  <div class="logo">Интернет-магазин</div>
+  <div class="header_left">
+      <a href="/?c=product">
+          <button class="btn-cart" type="button">Галерея</button>
+      </a>
+      <a href="/?c=cart">
+          <button class="btn-cart" type="button">Корзина</button>
+      </a>
+      <a href="?c=auth&a=login">
+          <button class="btn-cart" type="button">Вход</button>
+      </a>
+  </div>
+</div>
 <div class="content">
 
     <?=$content?>
