@@ -2,53 +2,60 @@
 
 namespace app\controllers;
 
+use app\interfaces\IRender;
+use app\models\repositories\UserRepository;
+use app\services\Session;
+
 abstract class Controller
 {
-
-    private $action;
-
-    private $defaultAction = "index";
-
-    private $layout = "main";
-
+    protected $defaultAction = 'index';
+    protected $action;
     protected $useLayout = true;
+    protected $layout = 'layouts/main';
+    /** @var IRender */
+    protected $renderer;
+    protected $session;
+    public $currentUser;
 
-
-    public function run($action = null)
+    public function __construct(IRender $renderer)
     {
-
-        $this->action = $action ?: $this->defaultAction;
-
-        $action = ucwords(str_replace("-", " ", $action));
-        $action = "action" . str_replace(" ", "", $action);
-        $this->$action();
+        $this->renderer = $renderer;
+        $this->session = new Session();
+        $this->currentUser = $this->getCurrentUser();
     }
 
-
-    public function render($template, $params)
+    public function runAction($action = null)
     {
-        if($this->useLayout){
-            return $this->renderTemplate("layouts/{$this->layout}",
-                ['content' => $this->renderTemplate($template, $params)]
-            );
-        }else{
-            return $this->renderTemplate($template, $params);
+        $this->action = (empty($action)) ? $this->defaultAction : $action;
+        $method = "action" . ucfirst($this->action);
+        if (method_exists($this, $method)) {
+            $this->$method();
+        } else {
+            echo $this->render('404');
         }
     }
 
-
-    public function renderTemplate($template, $params)
+    protected function redirect(string $url): void
     {
-
-        extract($params);
-
-        ob_start();
-
-        $templatePath = ROOT_DIR . "/views/{$template}.php";
-
-        include $templatePath;
-
-        return ob_get_clean();
+        header("Location: {$url}");
+        exit;
     }
 
-}
+    protected function render(string $template, array $params = [])
+    {
+        $content = $this->renderer->getContent($template, $params);
+        if ($this->useLayout) {
+            return $this->renderer->getContent($this->layout, ['content' => $content]);
+        }
+        return $content;
+    }
+
+    private function getCurrentUser()
+    {
+        if ($this->session->isSet('user_id')) {
+            $user_id = $this->session->get('user_id');
+            return (new UserRepository())->getById($user_id);
+        } else {
+            return false;
+        }
+    }

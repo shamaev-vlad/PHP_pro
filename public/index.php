@@ -19,6 +19,15 @@ $actionName = $_GET['a']  ?: "Login";;
 
 $controllerClass = CONTROLLERS_NAMESPACE . ucfirst($controllerName) . "Controller.php";
 
+if(class_exists($controllerClass)) {
+    /** @var \app\controllers\ProductController $controller */
+    $controller = new $controllerClass (new \app\services\renderers\TemplateRenderer());
+    try {
+        $controller->runAction($actionName);
+    } catch (PageNotFoundException $e) {
+        echo "404";
+    }
+
 $controller = new $controllerClass();
 
 $controller->run($actionName);

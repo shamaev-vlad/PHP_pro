@@ -1,0 +1,12 @@
+{
+    "name": "vladislavshamaev/php_pro",
+    "authors": [
+        {
+            "name": "Vlad Shamaev",
+            "email": "vladshamaev@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.0"
+    }
+}

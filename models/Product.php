@@ -24,4 +24,42 @@ class Product extends Model
     {
         return "products";
     }
+
+    public function getId()
+   {
+       return $this->id;
+   }
+
+   public function getName()
+   {
+       return $this->name;
+   }
+
+   public function setName($name)
+   {
+       $this->setPropsIsUpdated('name');
+       $this->name = $name;
+   }
+
+   public function getDescription()
+   {
+       return $this->description;
+   }
+
+   public function setDescription($description)
+   {
+       $this->setPropsIsUpdated('description');
+       $this->description = $description;
+   }
+
+   public function getPrice()
+   {
+       return $this->price;
+   }
+
+   public function setPrice($price)
+   {
+       $this->setPropsIsUpdated('price');
+       $this->price = $price;
+   }
 }
