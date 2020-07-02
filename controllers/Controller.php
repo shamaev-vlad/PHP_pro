@@ -17,10 +17,12 @@ abstract class Controller
     protected $session;
     public $currentUser;
 
+
     public function __construct(IRender $renderer)
     {
         $this->renderer = $renderer;
-        $this->session = new Session();
+        $this->session = App::getInstance()->session;
+        $this->request = App::getInstance()->request;
         $this->currentUser = $this->getCurrentUser();
     }
 

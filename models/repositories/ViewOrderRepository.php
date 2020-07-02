@@ -5,7 +5,6 @@ namespace app\models\repositories;
 
 
 use app\models\ViewOrder;
-use app\services\Db;
 
 class ViewOrderRepository
 {
@@ -13,7 +12,7 @@ class ViewOrderRepository
 
     public function __construct()
     {
-        $this->db = Db::getInstance();
+        $this->db = App::getInstance()->connection;
     }
 
     public function getRecordClass(): string
@@ -33,7 +32,7 @@ class ViewOrderRepository
             and order_status.id=`orders`.status
             and `orders`.user_id = :user_id
             group by `orders`.id;";
-        return Db::getInstance()->queryAll(static::getRecordClass(), $sql, [':user_id' => $userId]);
+        return $this->db->queryAll(static::getRecordClass(), $sql, [':user_id' => $userId]);
     }
 
     function getOrdersAllUsers()
@@ -48,6 +47,6 @@ class ViewOrderRepository
             and order_status.id=`orders`.status
             group by `orders`.user_id, `orders`.id, `orders`.date
             ORDER BY `orders`.date DESC";
-        return Db::getInstance()->queryAll(static::getRecordClass(), $sql);
+        return $this->db->queryAll(static::getRecordClass(), $sql);
     }
 }

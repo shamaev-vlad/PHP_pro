@@ -8,41 +8,32 @@ use app\services\Request;
 
 class CartController extends Controller
 {
-
     public function actionIndex()
     {
-
-        if ($this->session->isSet('user_name')) {
-            $userName = $this->session->get('user_name');
-        } else {
-            $userName = "Посетитель";
-        }
-
         $cart = (new Cart())->getCartContent();
-        if (empty($cart)) {
-            $cartInfo = $userName . ", Ваша корзина пуста";
-        } else {
-            $cartInfo = $userName . ", оформите заказ";
-        }
         foreach ($cart as $prod => $itm) {
-            $product = (new Product())->getById($itm['id']);
+            $product = (new ProductRepository())->getById($itm['id']);
             $cart[$prod]['imageType'] = $product->imageType;
             $cart[$prod]['imageData'] = $product->imageData;
         }
-        echo $this->render('cart', ['cart' => $cart, 'cartInfo' => $cartInfo]);
+        echo $this->render('view_cart', ['cart' => $cart, 'user' => $this->currentUser]);
     }
 
     public function actionRemove()
     {
-        if (Request::isPost()) {
-            $cart = new Cart();
-            if (Request::isSet('remove')) {
-                $cart->remove(Request::dirtyPost('product_item'));
-            }
-            if (Request::isSet('removeAll')) {
-                $cart->clear();
+        if ($this->request->isPost()) {
+            if ($this->request->isSet('remove')) { 
+                $cart = new Cart();
+                $cart->remove($this->request->dirtyPost('product_item'));
             }
         }
-        $this->redirect('?c=cart');
+        $this->redirect('/cart');
+    }
+
+    public function actionRemoveAll()
+    {
+        $cart = new Cart();
+        $cart->clear();
+        $this->redirect('/cart');
     }
 }

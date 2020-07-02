@@ -1,5 +1,5 @@
 <?php /** @var app\models\Product $model */ ?>
-<h1>Репродукция </h1>
+<h1>Продукт </h1>
 <div class="product">
   <div class="product_block">
       <?php

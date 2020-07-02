@@ -2,7 +2,7 @@
 
 namespace app\services;
 
-use app\traits\TSingleton;
+use PDO;
 
 class Db
 {
@@ -32,8 +32,8 @@ class Db
             );
 
             $this->connection->setAttribute(
-                \PDO::ATTR_DEFAULT_FETCH_MODE,
-                \PDO::FETCH_ASSOC
+                PDO::ATTR_DEFAULT_FETCH_MODE,
+                PDO::FETCH_ASSOC
             );
         }
 
@@ -51,14 +51,21 @@ class Db
         return $this->query($sql, $params)->rowCount();
     }
 
+    public function getLastInsertId()
+  {
+      return $this->getConnection()->lastInsertId();
+  }
+
     public function queryOne(string $sql, array $params = [])
     {
-        return $this->queryAll($sql, $params)[0];
+        return $this->queryAll($classname, $sql, $params)[0];
     }
 
     public function queryAll(string $sql, array $params = [])
     {
-        return $this->query($sql, $params)->fetchAll();
+      $pdoStatement = $this->query($sql, $params);
+      $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $classname);
+      return $pdoStatement->fetchAll();
     }
 
     private function buildDsnString()

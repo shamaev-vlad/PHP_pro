@@ -21,39 +21,31 @@ class ProductController extends Controller
 
 
   public function actionCard()
-  {
-
-      $this->useLayout = false;
-
-      $id = $_GET['id'];
-
-      if ($id) {
-          $product = Product::getOne($id);
-          echo $this->render("card", ['product' => $product]);
-      } else {
-          $products = Product::getAll();
-          foreach ($products as $product ) {
-              echo $this->render("card", ['product' => $product]);
-          }
-      }
-
-  }
-
-  public function actionBuy()
       {
-          $request = new Request();
-          $id = (int)$request->cleanGet('id');
-          if ($request->isPost()) {
-              $quantity = $request->cleanPost('quantity');
-              if ($quantity > 0) {
-                  $cart = new Cart();
-                  $cart->add(['id' => $id, 'quantity' => $quantity]);
-              } else {
-                  $this->redirect("/product/card?id=$id");
-              }
+          $id = (int)$this->request->cleanGet('id');
+          $model = (new ProductRepository())->getById($id);
+          $listComments = (new CommentRepository())->getCommentsByProductId($model->getId());
+          if ($this->currentUser && $this->currentUser->getIsAdm()) {
+              echo $this->render('view_upd_product', ['model' => $model, 'listComments' => $listComments]);
+          } else {
+              echo $this->render('view_product', ['model' => $model, 'listComments' => $listComments]);
           }
-          $this->redirect("/product");
       }
+
+      public function actionBuy()
+        {
+            $id = (int)$this->request->cleanGet('id');
+            if ($this->request->isPost()) {
+                $quantity = $this->request->cleanPost('quantity');
+                if ($quantity > 0) {
+                    $cart = new Cart();
+                    $cart->add(['id' => $id, 'quantity' => $quantity]);
+                } else {
+                    $this->redirect("/product/card?id=$id");
+                }
+            }
+            $this->redirect("/product");
+        }
 
       public function actionComment()
       {
@@ -71,27 +63,44 @@ class ProductController extends Controller
       }
 
       public function actionAdd()
-      {
-          $request = new Request();
-          if ($request->isPost()) {
-              $file = new LoadImageFile('my_file');
-              if ($file->isReady) {
-                  $product = new Product();
-                  $product->setName($request->cleanPost('name'));
-                  $product->setDescription($request->cleanPost('description'));
-                  $product->setPrice($request->dirtyPost('price'));
-                  $product->setImageData($file->getImageData());
-                  $product->setImageType($file->getImageType());
-                  (new ProductRepository())->save($product);
-              }
-              $this->redirect('/product/add');
-          }
+    {
 
-          if ($this->currentUser && $this->currentUser->getIsAdm()) {
-              echo $this->render('view_add_product');
-          } else {
-              $this->redirect('/auth/login');
-          }
+        if ($this->request->isPost()) {
+            $file = new LoadImageFile('my_file');
+            if ($file->isReady) {
+                $product = new Product();
+                $product->setName($this->request->cleanPost('name'));
+                $product->setDescription($this->request->cleanPost('description'));
+                $product->setPrice($this->request->dirtyPost('price'));
+                $product->setImageData($file->getImageData());
+                $product->setImageType($file->getImageType());
+                (new ProductRepository())->save($product);
+            }
+            $this->redirect('/product/add');
+        }
 
-      }
+        if ($this->currentUser && $this->currentUser->getIsAdm()) {
+            echo $this->render('view_add_product');
+        } else {
+            $this->redirect('/auth/login');
+        }
+    }
+
+    public function actionUpdate()
+    {
+        $id = (int)$this->request->cleanGet('id');
+        $product = (new ProductRepository())->getById($id);
+        if ($this->request->isPost()) {
+            $product->setName($this->request->cleanPost('name'));
+            $product->setDescription($this->request->cleanPost('description'));
+            $product->setPrice($this->request->dirtyPost('price'));
+            $file = new LoadImageFile('my_file');
+            if ($file->isReady) {
+                $product->setImageData($file->getImageData());
+                $product->setImageType($file->getImageType());
+            }
+            (new ProductRepository())->save($product);
+        }
+        $this->redirect("/product/card?id=$id");
+    }
   }
